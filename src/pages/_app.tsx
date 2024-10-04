@@ -13,31 +13,15 @@ export default function App({
   Component, pageProps: { session, ...pageProps },
 }: AppProps) {
 
-  const noLayoutPages = [
-    '/auth/login', 
-    '/auth/register', 
-    '/auth/forgot-password', 
-    '/auth/create-password', 
-    '/auth/reset-instruction',
-    '/merchants/create',
-    '/index'
-  ];
-
-  const useLayout = !noLayoutPages.includes(Component.displayName ?? '');
-
   return (
     <SessionProvider session={session}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <ErrorBoundary>
           <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-            {useLayout ? (
-              <RootLayout>
-                <Component {...pageProps} />
-              </RootLayout>
-            ) : (
+            <RootLayout>
               <Component {...pageProps} />
-            )}
+            </RootLayout>
           </SnackbarProvider>
         </ErrorBoundary>
       </ThemeProvider>

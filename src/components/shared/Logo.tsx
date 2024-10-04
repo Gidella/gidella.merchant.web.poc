@@ -5,6 +5,7 @@ import Image from "next/image";
 const LinkStyled = styled(Link)(() => ({
   height: "70px",
   width: "180px",
+  paddingTop: "10px",
   overflow: "hidden",
   display: "block",
 }));
