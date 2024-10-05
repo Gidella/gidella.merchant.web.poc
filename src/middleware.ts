@@ -4,11 +4,12 @@ import { withAuth } from "next-auth/middleware";
 export default withAuth(
   async function middleware(req) {
     const { pathname } = req.nextUrl;
-
+    const res = NextResponse.next();
+   
     if (pathname.startsWith('/_next') || pathname.startsWith('/images/')) {
-      return NextResponse.next();
+      return res;
     }
-    
+
     const unauthenticatedPages = [
       "/auth/login",
       "/auth/register",
@@ -22,7 +23,6 @@ export default withAuth(
       new RegExp(`^${page.replace("*", ".*")}$`).test(pathname)
     );
 
-
     if (req.nextauth.token) {
       if (isRequiresAuthentication) {
         const url = new URL("/", req.url);
@@ -34,6 +34,8 @@ export default withAuth(
         return NextResponse.redirect(url);
       }
     }
+
+    return res;
   },
   {
     callbacks: {

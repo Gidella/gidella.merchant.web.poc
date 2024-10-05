@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Loading from "./loading";
@@ -19,8 +19,57 @@ import { IconBasket } from "@tabler/icons-react";
 import BlankCard from "@/components/cards/BlankCard";
 import Link from "next/link";
 import DashboardCard from "@/components/container/DashboardCard";
+import { handleGetMerchantData } from "@/actions/merchant";
+import { MerchantModel } from "@/models/merchant";
+import { retrieveOrSetSubdomain } from "@/utils/helpers";
+import PageContainer from "@/components/container/PageContainer";
 
-const Home = () => {
+
+export const getServerSideProps = async (context: any) => {
+  const { req, res } = context;
+
+  // Retrieve or set subdomain
+  const subdomain = retrieveOrSetSubdomain(req, res);
+
+  return {
+    props: {
+      subdomain,
+    },
+  };
+};
+
+const Home = ({ subdomain }: { subdomain: string | null }) => {
+
+  const [merchantDetails, setMerchantDetails] = useState<MerchantModel>();
+  const [loadingMerchantDetails, setLoadingMerchantDetails] = useState(true);
+  const [hasMerchantDetails, setHasMerchantDetails] = useState(true);
+
+  if(subdomain == "" || subdomain == null){
+    console.log("no subdomain")
+  } else {
+    console.log("sub domain at page: ",subdomain)
+  }
+
+  useEffect(() => {
+    const fetchProducts = async (subdomain: string) => {
+      setLoadingMerchantDetails(true)
+      const res = await handleGetMerchantData(subdomain);
+      console.log(res)
+      if (res.data.status) {
+        setMerchantDetails(res.data.data); 
+        setLoadingMerchantDetails(false)
+        setHasMerchantDetails(true)
+      } else {
+        console.error("Failed to fetch products");
+        setLoadingMerchantDetails(false)
+        setHasMerchantDetails(false)
+      }
+    };
+
+    if(subdomain){
+      fetchProducts(subdomain);
+    }
+  }, [subdomain]);
 
   const ecoCard = [
     {
@@ -58,6 +107,23 @@ const Home = () => {
   ];
 
   return (
+    <PageContainer title="Hello---" description="Dashboard for Gidella Merchants">
+       <Grid item sm={12}>
+          <BlankCard>
+              <CardContent>
+                  <Typography variant="h5">Hello...</Typography> <br />
+                  <Typography variant="body1" color="primary">
+                    {loadingMerchantDetails 
+                      ? "loading merchant" 
+                      : hasMerchantDetails && merchantDetails
+                        ? <span dangerouslySetInnerHTML={{ __html: `Your business name is <b>${merchantDetails.businessName}</b>` }} />
+                        : "Invalid business URL"
+                    }
+                  </Typography>
+                </CardContent>
+          </BlankCard>
+      </Grid>
+      <br />
     <DashboardCard>
       <Grid container spacing={3}>
         {ecoCard.map((product, index) => (
@@ -113,6 +179,7 @@ const Home = () => {
         ))}
       </Grid>
     </DashboardCard>
+    </PageContainer>
   );
 };
 Home.displayName = '/index'
