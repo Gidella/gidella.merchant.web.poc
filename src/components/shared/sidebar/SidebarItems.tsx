@@ -6,7 +6,6 @@ import NavGroup from "./NavGroup/NavGroup";
 import { useSession } from "next-auth/react";
 import AdminMenuItems from "./MenuItems/AdminMenuItems";
 import MerchantMenuItems from "./MenuItems/MerchantMenuItems";
-import CustomerMenuItems from "./MenuItems/CustomerMenuItems";
 import { NavLabelModel, SidebarItemModel } from "@/models/menu";
 
 const SidebarItems = ({ toggleMobileSidebar }: any) => {
@@ -44,7 +43,7 @@ const SidebarItems = ({ toggleMobileSidebar }: any) => {
                 );
               }
             })
-          ) : user.role == 3 ? (
+          ) : (
             // For Merchant role
             MerchantMenuItems.map((item: SidebarItemModel) => {
               // {/********SubHeader**********/}
@@ -63,23 +62,7 @@ const SidebarItems = ({ toggleMobileSidebar }: any) => {
                   />
                 );
               }
-            })) : (
-              // For Customer role
-              CustomerMenuItems.map((item) => {
-                if (item.subheader) {
-                  return <NavGroup item={item} key={item.subheader} />;
-                } else {
-                  return (
-                    <NavItem
-                      item={item}
-                      key={item.id}
-                      pathDirect={pathDirect}
-                      onClick={toggleMobileSidebar}
-                    />
-                  );
-                }
-              })
-            )}
+            }))}
         </List>
       </Box>
     );
