@@ -3,6 +3,10 @@ import { MenuItemModel, NavLabelModel } from "@/models/menu";
 import cookie from 'cookie';
 import { NextResponse } from "next/server";
 
+export const getAvatarUrl = (merchantBusinessName: string) => {
+  return 'https://ui-avatars.com/api/?name='+merchantBusinessName
+}
+
 export const catchActionError = (action: () => Promise<APIResponseModel>): Promise<APIResponseModel> => {
     try {
       return action();
@@ -47,13 +51,26 @@ export const catchActionError = (action: () => Promise<APIResponseModel>): Promi
     const parsedCookies = cookies ? cookie.parse(cookies) : {};
     let subdomain = parsedCookies.subdomain || null;
   
-    // If subdomain is not already set in the cookies, set it
     if (!subdomain) {
       const host = req.headers.host;
       const hostNames = host?.split('.');
+
+      if (!hostNames || hostNames.length === 0) {
+        return "nil";
+      }
+
+      if (hostNames[0] === "www") {
+        hostNames.shift();
+      }
   
-      if (hostNames?.[0] && hostNames[0] !== 'www') {
-        subdomain = hostNames[0].toLowerCase();
+      if (hostNames?.[0]) {
+        subdomain = hostNames[0].toLocaleLowerCase()
+      }else {
+        subdomain = "nil"
+      }
+
+      if (["lowercase", "www", "*", "gidella"].includes(subdomain)) {
+        return "nil";
       }
   
       // Set cookie if valid subdomain is found

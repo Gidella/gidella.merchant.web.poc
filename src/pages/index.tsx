@@ -1,19 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import Loading from "./loading";
-
-import {
-  CardContent,
-  Typography,
-  Grid,
-  Rating,
-  Tooltip,
-  Fab,
-  Avatar
-} from "@mui/material";
+import router from "next/router";
+import { CardContent, Typography, Grid, Tooltip, Fab, Skeleton } from "@mui/material";
 import { Stack } from "@mui/system";
 import { IconBasket } from "@tabler/icons-react";
 import BlankCard from "@/components/cards/BlankCard";
@@ -21,14 +10,15 @@ import Link from "next/link";
 import DashboardCard from "@/components/container/DashboardCard";
 import { handleGetMerchantData } from "@/actions/merchant";
 import { MerchantModel } from "@/models/merchant";
-import { retrieveOrSetSubdomain } from "@/utils/helpers";
+import { capitalizeFirstLetter, formatNaira, retrieveOrSetSubdomain } from "@/utils/helpers";
 import PageContainer from "@/components/container/PageContainer";
+import Image from "next/image";
+import { useMerchant } from "@/context/MerchantContext";
 
 
 export const getServerSideProps = async (context: any) => {
   const { req, res } = context;
 
-  // Retrieve or set subdomain
   const subdomain = retrieveOrSetSubdomain(req, res);
 
   return {
@@ -42,27 +32,24 @@ const Home = ({ subdomain }: { subdomain: string | null }) => {
 
   const [merchantDetails, setMerchantDetails] = useState<MerchantModel>();
   const [loadingMerchantDetails, setLoadingMerchantDetails] = useState(true);
-  const [hasMerchantDetails, setHasMerchantDetails] = useState(true);
-
-  if(subdomain == "" || subdomain == null){
-    console.log("no subdomain")
-  } else {
-    console.log("sub domain at page: ",subdomain)
-  }
+  const { setMerchant, loading } = useMerchant();
 
   useEffect(() => {
     const fetchProducts = async (subdomain: string) => {
       setLoadingMerchantDetails(true)
       const res = await handleGetMerchantData(subdomain);
       console.log(res)
-      if (res.data.status) {
+      if(!res.status){
+        setLoadingMerchantDetails(false)
+        router.push('/business-not-found');
+      }
+      if (res.data.status && res.status) {
         setMerchantDetails(res.data.data); 
+        setMerchant(res.data.data);
         setLoadingMerchantDetails(false)
-        setHasMerchantDetails(true)
       } else {
-        console.error("Failed to fetch products");
         setLoadingMerchantDetails(false)
-        setHasMerchantDetails(false)
+        router.push('/business-not-found');
       }
     };
 
@@ -71,114 +58,79 @@ const Home = ({ subdomain }: { subdomain: string | null }) => {
     }
   }, [subdomain]);
 
-  const ecoCard = [
-    {
-      title: "Boat Headphone",
-      subheader: "September 14, 2023",
-      photo: '/images/products/s4.jpg',
-      salesPrice: 375,
-      price: 285,
-      rating: 4,
-    },
-    {
-      title: "MacBook Air Pro",
-      subheader: "September 14, 2023",
-      photo: '/images/products/s5.jpg',
-      salesPrice: 650,
-      price: 900,
-      rating: 5,
-    },
-    {
-      title: "Red Valvet Dress",
-      subheader: "September 14, 2023",
-      photo: '/images/products/s7.jpg',
-      salesPrice: 150,
-      price: 200,
-      rating: 3,
-    },
-    {
-      title: "Cute Soft Teddybear",
-      subheader: "September 14, 2023",
-      photo: '/images/products/s11.jpg',
-      salesPrice: 285,
-      price: 345,
-      rating: 2,
-    },
-  ];
-
   return (
-    <PageContainer title="Hello---" description="Dashboard for Gidella Merchants">
-       <Grid item sm={12}>
-          <BlankCard>
-              <CardContent>
-                  <Typography variant="h5">Hello...</Typography> <br />
-                  <Typography variant="body1" color="primary">
-                    {loadingMerchantDetails 
-                      ? "loading merchant" 
-                      : hasMerchantDetails && merchantDetails
-                        ? <span dangerouslySetInnerHTML={{ __html: `Your business name is <b>${merchantDetails.businessName}</b>` }} />
-                        : "Invalid business URL"
-                    }
+    <PageContainer title="Products" description="Add your product on Gidella">
+      <DashboardCard>
+        <Grid container spacing={3}>
+          <br />
+          {loadingMerchantDetails ? (
+            // Loading skeletons
+            Array.from(new Array(8)).map((_, index) => (
+              <Grid item xs={12} md={4} lg={3} key={index}>
+                <BlankCard sx={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
+                  <Skeleton variant="rectangular" width="100%" height={140} />
+                  <CardContent sx={{ p: 3, pt: 2 }}>
+                    <Skeleton variant="text" width="80%" />
+                    <Skeleton variant="text" width="60%" />
+                    <Skeleton variant="text" width="40%" />
+                  </CardContent>
+                </BlankCard>
+              </Grid>
+            ))
+          ) : merchantDetails?.products.length === 0 ? (
+            // Display this block when there are no products
+            <Grid item xs={12}>
+              <BlankCard sx={{ textAlign: "center", p: 5 }}>
+                <Typography variant="h6">No products available at the moment</Typography>
+                <Typography variant="body1">
+                  Check back later!
+                </Typography>                
+              </BlankCard>
+            </Grid>
+          ) : (
+            // Display products
+            merchantDetails?.products.map((product, index) => (
+              <Grid item xs={12} md={4} lg={3} key={index}>
+                <BlankCard sx={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
+                  <Typography component={Link} href="/">
+                    <Image 
+                      src={product.mediaURLs[0]} 
+                      width={300} 
+                      height={200} 
+                      alt="Image Preview" style={{ width: '100%', objectFit: 'contain' }} />
                   </Typography>
-                </CardContent>
-          </BlankCard>
-      </Grid>
-      <br />
-    <DashboardCard>
-      <Grid container spacing={3}>
-        {ecoCard.map((product, index) => (
-          <Grid item xs={12} md={4} lg={3} key={index}>
-            <BlankCard>
-              <Typography component={Link} href="/">
-                <Avatar
-                  src={product.photo} variant="square"
-                  sx={{
-                    height: 250,
-                    width: '100%',
-                  }}
-                  
-                />
-              </Typography>
-              <Tooltip title="Add To Cart">
-                <Fab
-                  size="small"
-                  color="primary"
-                  sx={{ bottom: "75px", right: "15px", position: "absolute" }}
-                >
-                  <IconBasket size="16" />
-                </Fab>
-              </Tooltip>
-              <CardContent sx={{ p: 3, pt: 2 }}>
-                <Typography variant="h6">{product.title}</Typography>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  mt={1}
-                >
-                  <Stack direction="row" alignItems="center">
-                    <Typography variant="h6">${product.price}</Typography>
-                    <Typography
-                      color="textSecondary"
-                      ml={1}
-                      sx={{ textDecoration: "line-through" }}
+                  <Tooltip title="Add To Cart">
+                    <Fab
+                      size="small"
+                      color="primary"
+                      sx={{ bottom: "75px", right: "15px", position: "absolute" }}
                     >
-                      ${product.salesPrice}
+                      <IconBasket size="16" />
+                    </Fab>
+                  </Tooltip>
+                  <CardContent sx={{ p: 3, pt: 2 }}>
+                    <Typography variant="h6">
+                      {capitalizeFirstLetter(product.name)}
                     </Typography>
-                  </Stack>
-                  <Rating
-                    name="read-only"
-                    size="small"
-                    value={product.rating}
-                    readOnly
-                  />
-                </Stack>
-              </CardContent>
-            </BlankCard>
-          </Grid>
-        ))}
-      </Grid>
-    </DashboardCard>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      mt={1}
+                    >
+                      <Stack direction="row" alignItems="center">
+                        <Typography variant="h6">
+                          {formatNaira(product.amount)}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </CardContent>
+                </BlankCard>
+              </Grid>
+            ))
+          )}
+        </Grid>
+      </DashboardCard>
     </PageContainer>
   );
 };

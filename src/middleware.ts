@@ -16,6 +16,7 @@ export default withAuth(
       "/auth/create-password",
       "/auth/reset-instruction",
       "/auth/forgot-password",
+      "/business-not-found",
       "/"
     ];
 

@@ -2,3 +2,17 @@
     background-color: #321aad;  /* Custom background color */
     color: #fffffff0;             /* Custom text color */
   }
+
+
+/* CartButton.css */
+.cartButton {
+  display: flex;
+  align-items: center;
+}
+
+.cartText {
+  background-color: white; /* Set the background to white */
+  padding: 4px; /* Optional: Add some padding to the text */
+  border-radius: 4px; /* Optional: Add rounded corners */
+  color: black; 
+}

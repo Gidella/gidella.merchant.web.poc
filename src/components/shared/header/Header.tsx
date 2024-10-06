@@ -1,22 +1,23 @@
-import React from 'react';
-import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 // components
 import Profile from './Profile';
-import { IconBellRinging, IconMenu } from '@tabler/icons-react';
-import Logo from '../Logo';
+import Image from "next/image"
+import { getAvatarUrl } from '@/utils/helpers';
+import { useMerchant } from "@/context/MerchantContext";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import CartButton from './Cart';
+
 
 interface ItemType {
   toggleMobileSidebar:  (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-const Header = ({toggleMobileSidebar}: ItemType) => {
-
-  // const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'));
-  // const lgDown = useMediaQuery((theme) => theme.breakpoints.down('lg'));
-
-
+const Header = () => {
+  const { merchant, loading } = useMerchant();
+  const itemCount = 5;
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',
     background: theme.palette.background.paper,
@@ -34,21 +35,6 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
   return (
     <AppBarStyled position="sticky" color="default">
       <ToolbarStyled>
-        {/* <IconButton
-          color="inherit"
-          aria-label="menu"
-          onClick={toggleMobileSidebar}
-          sx={{
-            display: {
-              lg: "none",
-              xs: "inline",
-            },
-          }}
-        >
-          <IconMenu width="20" height="20" />
-        </IconButton> */}
-
-
         <IconButton
           size="large"
           aria-label="show 11 new notifications"
@@ -56,18 +42,60 @@ const Header = ({toggleMobileSidebar}: ItemType) => {
           aria-controls="msgs-menu"
           aria-haspopup="true"
         >
-          {/* <Badge variant="dot" color="primary">
-            <IconBellRinging size="21" stroke="1.5" />
-          </Badge> */}
-          <Logo/>
-
+          {loading ? (
+            // Show loading state (a circular shadow for example) while waiting for data
+            <Box 
+              sx={{ 
+                width: 55, 
+                height: 55, 
+                borderRadius: "50%", 
+                backgroundColor: "gray", 
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)" 
+              }} />
+            ) : (
+              merchant?.logoImageURL == null || undefined ? (
+                <Box
+                  sx={{
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    width: "60px",
+                    height: "60px",
+                  }}
+                >
+                  <Image 
+                    src={getAvatarUrl(merchant?.businessName as string)} 
+                    alt="Merchant Logo" 
+                    style={{ objectFit: "cover" }} 
+                    height={60} 
+                    width={60} 
+                  />
+                </Box>
+              ) : (
+                <Box
+                  sx={{
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    width: "60px",
+                    height: "60px",
+                  }}
+                >
+                  <Image 
+                    src={merchant?.logoImageURL as string} 
+                    alt="Merchant Logo" 
+                    style={{ objectFit: "cover" }} 
+                    height={60} 
+                    width={60} 
+                  />
+                </Box>
+              )
+            )}
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-          <Profile />
-          <Button variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
+          <CartButton itemCount={itemCount} />
+          {/* <Button variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
             Login
-          </Button>
+          </Button> */}
         </Stack>
       </ToolbarStyled>
     </AppBarStyled>

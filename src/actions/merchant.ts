@@ -8,15 +8,19 @@ import { Session } from "next-auth";
 export async function handleGetMerchantData(username: string): Promise<APIResponseModel> {
   return catchActionError(async () => {
     
-    const response = await fetch(`${baseUrl}/Merchant/Details/${username}`, {
-      method: "GET",
-      headers: { 
-        "Content-type": "application/json",
-      }
-    });
-
-    const data = await response.json();
-    return { status: response.ok, data: data };
+    if(username == "nil"){
+      return { status: false, data: "nil" };
+    }else{
+      const response = await fetch(`${baseUrl}/Merchant/Details/${username}`, {
+        method: "GET",
+        headers: { 
+          "Content-type": "application/json",
+        }
+      });
+  
+      const data = await response.json();
+      return { status: response.ok, data: data };
+    }
   });
 }
 
