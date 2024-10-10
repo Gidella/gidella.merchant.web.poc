@@ -1,122 +1,124 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
-import { Grid, Typography, Button, Card, CardContent, IconButton, Stack, Divider } from "@mui/material";
+import { Button, Grid, Card, CardContent, Typography, IconButton, CardMedia, Stack } from "@mui/material";
 import { useMerchant } from "@/context/MerchantContext";
-import { CartProductModel, ProductModel } from "@/models/product";
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import { capitalizeFirstLetter, formatNaira } from "@/utils/helpers";
-import RemoveIcon from "@mui/icons-material/Remove";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { CartProductModel } from "@/models/product";
 import PageContainer from "@/components/container/PageContainer";
+import DashboardCard from "@/components/container/DashboardCard";
 
-const CartItems = () => {
-  const { itemsCount, setItemsCount, addProductToCart } = useMerchant();
-  const [cartItems, setCartItems] = useState<CartProductModel[]>([]);
-  const [totalSum, setTotalSum] = useState(0);
+const CartItemsPage = () => {
+  const { itemsCount, setItemsCount, merchant } = useMerchant();
+  const [cartProducts, setCartProducts] = useState<CartProductModel[]>([]);
 
   useEffect(() => {
-    // Fetch cart items from local storage on component mount
-    const cart = localStorage.getItem("cart");
-    if (cart) {
-      const parsedCart = JSON.parse(cart);
-      setCartItems(parsedCart.products);
-      calculateTotal(parsedCart.products);
+    const cart = localStorage.getItem("cart")
+      ? JSON.parse(localStorage.getItem("cart") as string)
+      : null;
+
+    if (cart && cart.products) {
+      setCartProducts(cart.products);
     }
   }, []);
 
-  const calculateTotal = (items: CartProductModel[]) => {
-    const total = items.reduce((sum, item) => {
-      const productTotal = item.quantity * item.amount; // Assuming `amount` is stored in cart
-      return sum + productTotal;
-    }, 0);
-    setTotalSum(total);
-  };
-
-  const updateQuantity = (productId: string, variationId: string, quantity: number) => {
-    const updatedCartItems = cartItems.map(item => {
-      if (item.productId === productId && item.variationId === variationId) {
-        const updatedItem = { ...item, quantity: item.quantity + quantity };
-        return updatedItem;
+  const handleQuantityChange = (productId: string, variationId: string, change: number) => {
+    const updatedCartProducts = cartProducts.map((product) => {
+      if (product.productId === productId && product.variationId === variationId) {
+        const updatedQuantity = product.quantity + change;
+        return { ...product, quantity: updatedQuantity > 0 ? updatedQuantity : 1 };
       }
-      return item;
-    }).filter(item => item.quantity > 0);
+      return product;
+    });
 
-    // Update local storage
-    const updatedCart = { ...JSON.parse(localStorage.getItem("cart") as string), products: updatedCartItems };
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-
-    // Update state and recalculate total
-    setCartItems(updatedCartItems);
-    setItemsCount(updatedCartItems.length);
-    calculateTotal(updatedCartItems);
+    setCartProducts(updatedCartProducts);
+    localStorage.setItem("cart", JSON.stringify({ ...merchant, products: updatedCartProducts }));
+    setItemsCount(updatedCartProducts.length);
   };
 
-  const removeItem = (productId: string, variationId: string) => {
-    const filteredCartItems = cartItems.filter(item => !(item.productId === productId && item.variationId === variationId));
+  const handleRemoveProduct = (productId: string, variationId: string) => {
+    const updatedCartProducts = cartProducts.filter(
+      (product) => !(product.productId === productId && product.variationId === variationId)
+    );
 
-    // Update local storage
-    const updatedCart = { ...JSON.parse(localStorage.getItem("cart") as string), products: filteredCartItems };
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-
-    // Update state and recalculate total
-    setCartItems(filteredCartItems);
-    setItemsCount(filteredCartItems.length);
-    calculateTotal(filteredCartItems);
+    setCartProducts(updatedCartProducts);
+    localStorage.setItem("cart", JSON.stringify({ ...merchant, products: updatedCartProducts }));
+    setItemsCount(updatedCartProducts.length);
   };
+
+  const totalAmount = cartProducts.reduce((acc, product) => acc + product.amount * product.quantity, 0);
 
   return (
-    <PageContainer title="Cart Items" description="View and manage your cart items">
-      <Typography variant="h4" gutterBottom>Shopping Cart</Typography>
-      <br />
-      <Grid container spacing={3}>
-        {cartItems.length === 0 ? (
-          <Typography variant="body1">Your cart is empty!</Typography>
-        ) : (
-          <>
-            {cartItems.map((item, index) => (
-              <Grid item xs={12} key={index}>
-                <Card sx={{ mb: 2 }}>
-                  <CardContent>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <Typography variant="h6">{capitalizeFirstLetter(item.productName)}</Typography>
-                        <Typography variant="body2">{item.variationName || "Default"}</Typography>
-                      </Stack>
-                      <Typography variant="h6">{formatNaira(item.amount * item.quantity)}</Typography>
-                    </Stack>
-                    <Divider sx={{ my: 2 }} />
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <IconButton onClick={() => updateQuantity(item.productId, item.variationId, -1)}>
-                          <RemoveIcon />
-                        </IconButton>
-                        <Typography>{item.quantity}</Typography>
-                        <IconButton onClick={() => updateQuantity(item.productId, item.variationId, 1)}>
-                          <AddIcon />
-                        </IconButton>
-                      </Stack>
-                      <IconButton onClick={() => removeItem(item.productId, item.variationId)}>
-                        <DeleteIcon color="error" />
-                      </IconButton>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-            <Grid item xs={12}>
-              <Card sx={{ p: 3 }}>
-                <Typography variant="h6">Total: {formatNaira(totalSum)}</Typography>
-                <Button variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
-                  Checkout
+    <PageContainer title="Shopping Cart" description="Buy online">
+        <DashboardCard>
+        <div>
+            <Typography variant="h3" gutterBottom align="center">
+                Your Shopping Cart
+            </Typography>
+            <br/>
+            {cartProducts.length === 0 ? (
+                <Typography variant="h6">Your cart is empty</Typography>
+            ) : (
+                <Grid container spacing={3}>
+                {cartProducts.map((product) => (
+                    <Grid item xs={12} md={4} lg={3} key={product.productId + product.variationId}>
+                    <Card>
+                        <CardMedia
+                        component="img"
+                        height="200"
+                        image={product.imageUrl}
+                        alt={product.productName}
+                        sx={{ objectFit: "contain", p: 2 }}
+                        />
+                        <CardContent>
+                        <Typography variant="h6">{capitalizeFirstLetter(product.productName)}</Typography>
+                        {product.variationName && (
+                            <Typography variant="subtitle2">Variation: {product.variationName}</Typography>
+                        )}
+                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                            <Typography variant="h6">{formatNaira(product.amount)}</Typography>
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                            <IconButton
+                                onClick={() => handleQuantityChange(product.productId, product.variationId, -1)}
+                            >
+                                <RemoveIcon />
+                            </IconButton>
+                            <Typography>{product.quantity}</Typography>
+                            <IconButton
+                                onClick={() => handleQuantityChange(product.productId, product.variationId, 1)}
+                            >
+                                <AddIcon />
+                            </IconButton>
+                            </Stack>
+                        </Stack>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            startIcon={<DeleteIcon />}
+                            onClick={() => handleRemoveProduct(product.productId, product.variationId)}
+                            sx={{ mt: 2 }}
+                        >
+                            Remove
+                        </Button>
+                        </CardContent>
+                    </Card>
+                    </Grid>
+                ))}
+                </Grid>
+            )}
+            {cartProducts.length > 0 && (
+                <div style={{ marginTop: "20px", textAlign: "right" }}>
+                <Typography variant="h5">Total: {formatNaira(totalAmount)}</Typography>
+                <Button variant="contained" color="primary" size="large" sx={{ mt: 2 }}>
+                    Checkout
                 </Button>
-              </Card>
-            </Grid>
-          </>
-        )}
-      </Grid>
+                </div>
+            )}
+        </div>
+        </DashboardCard>
     </PageContainer>
   );
 };
 
-export default CartItems;
+export default CartItemsPage;
