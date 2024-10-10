@@ -8,7 +8,6 @@ import { SnackbarProvider } from "notistack";
 import theme from '../theme';
 import RootLayout from '../components/shared/Layout'; 
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
-import Header from "@/components/shared/header/Header";
 import { MerchantProvider } from "@/context/MerchantContext";
 
 export default function App({

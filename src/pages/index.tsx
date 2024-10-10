@@ -29,6 +29,7 @@ export const getServerSideProps = async (context: any) => {
 };
 
 const Home = ({ subdomain }: { subdomain: string | null }) => {
+  const { addProductToCart } = useMerchant();
 
   const [merchantDetails, setMerchantDetails] = useState<MerchantModel>();
   const [loadingMerchantDetails, setLoadingMerchantDetails] = useState(true);
@@ -104,6 +105,7 @@ const Home = ({ subdomain }: { subdomain: string | null }) => {
                       size="small"
                       color="primary"
                       sx={{ bottom: "75px", right: "15px", position: "absolute" }}
+                      onClick={() => addProductToCart(product)}
                     >
                       <IconBasket size="16" />
                     </Fab>

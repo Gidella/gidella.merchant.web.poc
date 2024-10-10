@@ -93,9 +93,6 @@ const Header = () => {
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
           <CartButton itemCount={itemCount} />
-          {/* <Button variant="contained" component={Link} href="/authentication/login"   disableElevation color="primary" >
-            Login
-          </Button> */}
         </Stack>
       </ToolbarStyled>
     </AppBarStyled>

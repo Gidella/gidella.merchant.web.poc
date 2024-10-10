@@ -1,3 +1,5 @@
+import { ProductModel, ProductVariationModel } from "./product";
+
 export interface CreateMerchantModel {
     businessURL:     string;
     businessName:    string;
@@ -21,36 +23,21 @@ export interface CategoryModel {
 }
 
 export interface MerchantModel {
-    businessName:   string;
-    businessUrl:    string;
-    logoImageURL:   null;
-    bannerImageURL: null;
-    category:       string;
-    merchantId:     string;
-    phone:          null;
-    categories:     CategoryModel[];
-    brands:         any[];
-    products:       ProductModel[];
+    businessName:       string;
+    businessUrl:        string;
+    logoImageURL:       null;
+    bannerImageURL:     null;
+    category:           string;
+    merchantId:         string;
+    phone:              null;
+    categories:         CategoryModel[];
+    brands:             any[];
+    products:           ProductModel[];
+    productVariations:  ProductVariationModel[];
 }
 
 export interface CategoryModel {
     categoryId:   string;
     name:         string;
     productCount: number;
-}
-
-export interface ProductModel {
-    productId:           string;
-    name:                string;
-    amount:              number;
-    description:         string;
-    mediaURLs:           string[];
-    isPublished:         boolean;
-    productCategoryId:   string;
-    productCategoryName: string;
-    productBrandId:      null;
-    productBrandName:    string;
-    productBrandLogoURL: string;
-    status:              number;
-    statusName:          string;
 }

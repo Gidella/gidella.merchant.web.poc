@@ -17,7 +17,8 @@ export default withAuth(
       "/auth/reset-instruction",
       "/auth/forgot-password",
       "/business-not-found",
-      "/"
+      "/",
+      "/cart-items"
     ];
 
     const isRequiresAuthentication = unauthenticatedPages.some((page) =>
