@@ -69,10 +69,14 @@ const Home = ({ subdomain }: { subdomain: string | null }) => {
       <DashboardCard>
         {/* Wrap multiple children inside a single parent element */}
         <>
-          {/* Business Name */}
-          <Typography variant="h3" gutterBottom align="center">
-            {merchantDetails?.businessName || "Business Name"}
-          </Typography>
+          {loadingMerchantDetails ? (
+              <Skeleton variant="text" width={300} height={50} sx={{ margin: "0 auto" }} />
+            ) : (
+              <Typography variant="h3" gutterBottom align="center">
+                {merchantDetails?.businessName}
+              </Typography>
+          )}
+  
           <br />
 
           {/* Search Bar */}

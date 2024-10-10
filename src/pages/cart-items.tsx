@@ -58,18 +58,21 @@ const CartItemsPage = () => {
             </Typography>
             <br/>
             {cartProducts.length === 0 ? (
-                <Typography variant="h6">Your cart is empty</Typography>
+                <>
+                    <br/>
+                    <Typography variant="h6" align="center">Your cart is empty</Typography>
+                </>
             ) : (
                 <Grid container spacing={3}>
                 {cartProducts.map((product) => (
                     <Grid item xs={12} md={4} lg={3} key={product.productId + product.variationId}>
                     <Card>
                         <CardMedia
-                        component="img"
-                        height="200"
-                        image={product.imageUrl}
-                        alt={product.productName}
-                        sx={{ objectFit: "contain", p: 2 }}
+                            component="img"
+                            height="200"
+                            image={product.imageUrl}
+                            alt={product.productName}
+                            sx={{ objectFit: "contain", p: 2 }}
                         />
                         <CardContent>
                         <Typography variant="h6">{capitalizeFirstLetter(product.productName)}</Typography>
@@ -77,7 +80,7 @@ const CartItemsPage = () => {
                             <Typography variant="subtitle2">Variation: {product.variationName}</Typography>
                         )}
                         <Stack direction="row" justifyContent="space-between" alignItems="center">
-                            <Typography variant="h6">{formatNaira(product.amount)}</Typography>
+                            <Typography variant="h6">{formatNaira(product.amount * product.quantity)}</Typography>
                             <Stack direction="row" alignItems="center" spacing={1}>
                             <IconButton
                                 onClick={() => handleQuantityChange(product.productId, product.variationId, -1)}
