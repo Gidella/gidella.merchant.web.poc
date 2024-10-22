@@ -33,14 +33,15 @@ export interface ProductVariationModel {
 }
 
 export interface CartModel {
-    products:   CartProductModel[];
-    merchantId: string;
+    products:       CartProductModel[];
+    merchantId:     string;
+    paymentMode:    number;
 }
 
 export interface CartProductModel {
     productId:      string;
-    variationId:    string;
-    variationName:  string;
+    variationId:    string | null;
+    variationName:  string | null;
     productName:    string;
     quantity:       number;
     amount:         number;

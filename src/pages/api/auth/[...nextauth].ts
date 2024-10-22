@@ -1,6 +1,6 @@
 import NextAuth from "next-auth/next";
 import { jwtDecode } from "jwt-decode";
-import { handleLogin, handleRefreshMerchantToken } from "@/actions/auth";
+import { handleLogin } from "@/actions/auth";
 import { SessionModel, TokenModel, UserModel } from "@/models/auth";
 import type { NextAuthOptions, RequestInternal } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -21,7 +21,7 @@ const authOptions: NextAuthOptions = {
           email: request.body?.email,
           password: request.body?.password,
         };
-        const response = loginPayload.email == "no-email"? await handleRefreshMerchantToken(loginPayload.password) : await handleLogin(loginPayload);
+        const response = await handleLogin(loginPayload);
         const data = response.data.data;
         if (response.status && data) {
           return data;
@@ -61,7 +61,7 @@ const authOptions: NextAuthOptions = {
     },
   },
   pages: { 
-    signIn: "/auth/login"
+    signIn: "/login"
   },
   secret: process.env.NEXTAUTH_SECRET
 };

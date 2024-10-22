@@ -12,6 +12,8 @@ interface MerchantContextProps {
   itemsCount: number;
   setItemsCount: (count: number) => void;
   addProductToCart: (product: any) => void;
+  updateCartPayment: (paymentMode: number) => void;
+  clearCart: () => void;
 }
 
 const MerchantContext = createContext<MerchantContextProps | undefined>(undefined);
@@ -58,9 +60,9 @@ export const MerchantProvider = ({ children }: { children: React.ReactNode }) =>
          var cartProduct: CartProductModel = {
           productId:      product.productId,
           productName:    product.name,
-          variationName:  '',
+          variationName:  null,
           amount:         product.amount, 
-          variationId:    '',
+          variationId:    null,
           quantity:       1,
           imageUrl:       product.mediaURLs[0]
          }
@@ -79,15 +81,29 @@ export const MerchantProvider = ({ children }: { children: React.ReactNode }) =>
           imageUrl:       product.mediaURLs[0]
         }
         const newCart: CartModel = {
-          merchantId: merchant?.merchantId ? merchant.merchantId : '',
-          products: [cartProductModel],
+          merchantId:   merchant?.merchantId ? merchant.merchantId : '',
+          products:     [cartProductModel],
+          paymentMode:  0
         };
   
         localStorage.setItem('cart', JSON.stringify(newCart));
         setItemsCount(newCart.products.length); 
       }
     
-    enqueueSnackbar(`${capitalizeFirstLetter(product.name)} added to cart successfully...`, { variant: "success", autoHideDuration: 1500 });
+    enqueueSnackbar(`${capitalizeFirstLetter(product.name)} added to cart successfully...`, { variant: "success", autoHideDuration: 1000 });
+  };
+
+  const updateCartPayment = (paymentMode: number) => {
+    
+    const cart: CartModel | null = localStorage.getItem('cart') 
+      ? (JSON.parse(localStorage.getItem('cart')!) as CartModel) 
+      : null;
+    
+      if(cart){
+        cart.paymentMode = paymentMode
+        localStorage.setItem('cart', JSON.stringify(cart));
+        setItemsCount(cart.products.length); 
+      } 
   };
 
   const addProductWithVariationToCart = (product: ProductModel, productVariation: ProductVariationModel) => {
@@ -135,19 +151,35 @@ export const MerchantProvider = ({ children }: { children: React.ReactNode }) =>
           imageUrl:       product.mediaURLs[0]
       }
       const newCart: CartModel = {
-        merchantId: merchant?.merchantId ? merchant.merchantId : '',
-        products: [cartProductModel],
+        merchantId:   merchant?.merchantId ? merchant.merchantId : '',
+        products:     [cartProductModel],
+        paymentMode:  0
       };
 
       localStorage.setItem('cart', JSON.stringify(newCart));
       setItemsCount(newCart.products.length); 
     }
     
-    enqueueSnackbar(`${capitalizeFirstLetter(product.name)} added to cart successfully...`, { variant: "success", autoHideDuration: 1500 });
+    enqueueSnackbar(`${capitalizeFirstLetter(product.name)} added to cart successfully...`, { variant: "success", autoHideDuration: 1000 });
+  };
+
+  const clearCart = () => {
+    localStorage.removeItem("cart");
+    setItemsCount(0);
   };
 
   return (
-    <MerchantContext.Provider value={{ merchant, setMerchant: updateMerchant, loading, itemsCount, setItemsCount, addProductToCart }}>
+    <MerchantContext.Provider value={
+        { 
+          merchant, 
+          setMerchant: updateMerchant, 
+          loading, 
+          itemsCount, 
+          setItemsCount, 
+          addProductToCart,
+          updateCartPayment,
+          clearCart
+        }}>
       {children}
     </MerchantContext.Provider>
   );

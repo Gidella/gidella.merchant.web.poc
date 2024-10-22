@@ -9,6 +9,7 @@ import theme from '../theme';
 import RootLayout from '../components/shared/Layout'; 
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { MerchantProvider } from "@/context/MerchantContext";
+import '@/pages/global.css'; 
 
 export default function App({
   Component, pageProps: { session, ...pageProps },

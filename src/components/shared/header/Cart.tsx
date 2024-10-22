@@ -14,7 +14,7 @@ const CartButton: React.FC<CartButtonProps> = () => {
   return (
     <Button variant="contained" color="primary" component={Link} href="/cart-items" className="cartButton">
         <ShoppingCartIcon />
-        <span className="cartText">
+        <span>
             {itemsCount} 
         </span>
     </Button>

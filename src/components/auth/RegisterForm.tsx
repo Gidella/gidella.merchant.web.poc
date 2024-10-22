@@ -25,7 +25,8 @@ const RegisterForm = ({ title, subtitle, subtext }: RegisterFormProps ) => {
         firstName: "", 
         password: "",
         lastName: "",
-        email:""
+        email:"",
+        phone:""
     });
     const router = useRouter();
 

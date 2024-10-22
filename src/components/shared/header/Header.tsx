@@ -3,11 +3,9 @@ import { Box, AppBar, Toolbar, styled, Stack, IconButton, Button } from '@mui/ma
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 // components
-import Profile from './Profile';
 import Image from "next/image"
 import { getAvatarUrl } from '@/utils/helpers';
 import { useMerchant } from "@/context/MerchantContext";
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CartButton from './Cart';
 
 
@@ -45,6 +43,7 @@ const Header = () => {
           {loading ? (
             // Show loading state (a circular shadow for example) while waiting for data
             <Box 
+              component={Link} href="/"
               sx={{ 
                 width: 55, 
                 height: 55, 
@@ -61,6 +60,7 @@ const Header = () => {
                     width: "60px",
                     height: "60px",
                   }}
+                  component={Link} href="/"
                 >
                   <Image 
                     src={getAvatarUrl(merchant?.businessName as string)} 
@@ -78,6 +78,7 @@ const Header = () => {
                     width: "60px",
                     height: "60px",
                   }}
+                  component={Link} href="/"
                 >
                   <Image 
                     src={merchant?.logoImageURL as string} 

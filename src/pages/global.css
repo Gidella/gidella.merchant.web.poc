@@ -13,6 +13,16 @@
 .cartText {
   background-color: white; /* Set the background to white */
   padding: 4px; /* Optional: Add some padding to the text */
-  border-radius: 4px; /* Optional: Add rounded corners */
+  border-radius: 13px; /* Optional: Add rounded corners */
   color: black; 
+}
+
+.cart-container {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.card-media {
+  object-fit: contain;
+  padding: 16px; /* 16px = 2 * 8px (Material-UI default spacing) */
 }

@@ -4,10 +4,11 @@ export interface LoginModel {
 }
 
 export interface CreateAccountModel {
-    firstName: string;
-    lastName:  string;
-    email:     string;
-    password:  string;
+    firstName:  string;
+    lastName:   string;
+    email:      string;
+    password:   string;
+    phone:      string;
 }
 
 export interface CreatePasswordModel {

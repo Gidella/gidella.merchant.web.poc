@@ -6,33 +6,33 @@ export default withAuth(
     const { pathname } = req.nextUrl;
     const res = NextResponse.next();
    
-    if (pathname.startsWith('/_next') || pathname.startsWith('/images/')) {
+    if (pathname.startsWith('/_next') || pathname.startsWith('/images/') || pathname.startsWith('/')) {
       return res;
     }
 
     const unauthenticatedPages = [
-      "/auth/login",
-      "/auth/register",
-      "/auth/create-password",
-      "/auth/reset-instruction",
-      "/auth/forgot-password",
+      "/login",
+      "/create-password",
+      "/reset-instruction",
+      "/forgot-password",
       "/business-not-found",
-      "/",
-      "/cart-items"
+      "/cart-items",
+      "/sign-up",
+      "/checkout"
     ];
 
-    const isRequiresAuthentication = unauthenticatedPages.some((page) =>
+    const hasAuthentication = unauthenticatedPages.some((page) =>
       new RegExp(`^${page.replace("*", ".*")}$`).test(pathname)
     );
 
     if (req.nextauth.token) {
-      if (isRequiresAuthentication) {
+      if (hasAuthentication) {
         const url = new URL("/", req.url);
         return NextResponse.redirect(url);
       }
     } else {
-      if (!isRequiresAuthentication) {
-        const url = new URL("/auth/login", req.url);
+      if (!hasAuthentication) {
+        const url = new URL("/login", req.url);
         return NextResponse.redirect(url);
       }
     }

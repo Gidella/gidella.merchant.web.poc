@@ -4,7 +4,8 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJpNHuY3-wW6iUgv5DidNh3pvFICmryDc&libraries=places&loading=async" defer></script>
+      {/* <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCJpNHuY3-wW6iUgv5DidNh3pvFICmryDc&libraries=places&loading=async" defer></script> */}
+        {/* <script src="https://js.useklump.com/klump.js" defer></script> */}
       </Head>
       <body>
         <Main />
