@@ -46,9 +46,9 @@ export const MerchantProvider = ({ children }: { children: React.ReactNode }) =>
       : null;
     
       if(cart){
-        var thisProduct = cart.products.find(x => x.productId == product.productId && x.variationId == '')
+        var thisProduct = cart.products.find(x => x.productId == product.productId && x.variationId == null)
         if(thisProduct){
-          var filteredCart = cart.products.filter(x => !(x.productId === product.productId && x.variationId === ''));
+          var filteredCart = cart.products.filter(x => !(x.productId === product.productId && x.variationId === null));
           
           thisProduct.quantity += 1
           filteredCart.push(thisProduct)
@@ -74,9 +74,9 @@ export const MerchantProvider = ({ children }: { children: React.ReactNode }) =>
         const cartProductModel: CartProductModel = {
           productId:      product.productId,
           productName:    product.name,
-          variationName:  '',
+          variationName:  null,
           amount:         product.amount, 
-          variationId:    '',
+          variationId:    null,
           quantity:       1,
           imageUrl:       product.mediaURLs[0]
         }

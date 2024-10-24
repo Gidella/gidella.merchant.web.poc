@@ -101,7 +101,7 @@ const CreatePasswordPage = () => {
       const res = await handleCreatePassword(model);
 
         if (res.status && res.data.status) {
-            enqueueSnackbar("Password created successfully...", { variant: "success", autoHideDuration: 1000 });
+            enqueueSnackbar("Password created successfully...", { variant: "success", autoHideDuration: 1500 });
             setIsLoading(false);
             await router.push("/login");
         } else if (res.status && !res.data.status) {
@@ -109,7 +109,7 @@ const CreatePasswordPage = () => {
             enqueueSnackbar(errorMessage, { variant: "error", autoHideDuration: 500 });
             setIsLoading(false);
         } else {
-            enqueueSnackbar("An error occurred. Please try again later.", { variant: "error", autoHideDuration: 1000 });
+            enqueueSnackbar("An error occurred. Please try again later.", { variant: "error", autoHideDuration: 1500 });
             setIsLoading(false);
         }
     }
@@ -132,6 +132,7 @@ const CreatePasswordPage = () => {
           {code.map((digit, index) => (
             <TextField
               key={index}
+              type="number"
               value={digit}
               onChange={(e) => handleChangeCode(index, e.target.value)}
               onKeyDown={(e) => handleBackspace(index, e as React.KeyboardEvent<HTMLInputElement>)}

@@ -6,7 +6,6 @@ import { CardContent, Typography, Grid, Tooltip, Fab, Skeleton, TextField, Input
 import { Stack } from "@mui/system";
 import { IconBasket, IconSearch } from "@tabler/icons-react";
 import BlankCard from "@/components/cards/BlankCard";
-import Link from "next/link";
 import DashboardCard from "@/components/container/DashboardCard";
 import { handleGetMerchantData } from "@/actions/merchant";
 import { MerchantModel } from "@/models/merchant";
@@ -28,10 +27,9 @@ export const getServerSideProps = async (context: any) => {
 };
 
 const Home = ({ subdomain }: { subdomain: string | null }) => {
-  const { addProductToCart } = useMerchant();
+  const { addProductToCart, setMerchant, loading } = useMerchant();
   const [merchantDetails, setMerchantDetails] = useState<MerchantModel>();
   const [loadingMerchantDetails, setLoadingMerchantDetails] = useState(true);
-  const { setMerchant, loading } = useMerchant();
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -55,6 +53,11 @@ const Home = ({ subdomain }: { subdomain: string | null }) => {
       fetchProducts(subdomain);
     }
   }, [subdomain]);
+
+  const handleProductClick = (productId: string) => {
+    sessionStorage.setItem("fromIndex", productId);
+    router.push(`/products/${productId}`);
+  };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value.toLowerCase());
@@ -124,7 +127,7 @@ const Home = ({ subdomain }: { subdomain: string | null }) => {
               filteredProducts?.map((product, index) => (
                 <Grid item xs={12} md={4} lg={3} key={index}>
                   <BlankCard sx={{ boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
-                    <Typography component={Link} href="/">
+                    <Typography onClick={() => handleProductClick(product.productId)}>
                       <Image
                         src={product.mediaURLs[0]}
                         width={300}

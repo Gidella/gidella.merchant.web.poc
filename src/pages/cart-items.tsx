@@ -19,9 +19,7 @@ import { CartModel } from "@/models/product";
 import PageContainer from "@/components/container/PageContainer";
 import DashboardCard from "@/components/container/DashboardCard";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { enqueueSnackbar } from "notistack";
 
 const CartItemsPage = () => {
   const { itemsCount, setItemsCount, merchant } = useMerchant();
@@ -102,7 +100,7 @@ const CartItemsPage = () => {
                 </Grid>
               ))}
             </Grid>
-          ) : cartData?.products.length === 0 ? (
+          ) : (cartData?.products.length === 0 || itemsCount == 0) ? (
             <>
               <br />
               <Typography variant="h6" align="center">
